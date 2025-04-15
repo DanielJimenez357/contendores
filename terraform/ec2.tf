@@ -16,8 +16,25 @@ resource "aws_instance" "instancia" {
   ami                         = var.ami
   instance_type               = var.instancia
   associate_public_ip_address = true
-  vpc_security_group_ids    = [aws_security_group.grupo_seguridad.id]
+  vpc_security_group_ids      = [aws_security_group.grupo_seguridad.id]
   key_name                    = var.key_name
+  
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt-get update -y
+              sudo apt-get install -y docker.io
+              
+              sudo apt-get update
+              
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+              
+              sudo systemctl start docker
+              
+              EOF
+
+  tags = {
+    Name = "docker-instance"
+  }
 }
 
 output "public_ip" {
